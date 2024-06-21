@@ -2,6 +2,9 @@
 {
     public abstract class Entity
     {
+
+        public Entity? Parent { get; private set; }
+
         public virtual void Update() { }
 
         public virtual void LateUpdate() { }
@@ -14,6 +17,13 @@
             {
                 throw new ArgumentNullException(nameof(entity));
             }
+
+            if (entity.Parent != null)
+            {
+                throw new InvalidOperationException("The entity already has a parent.");
+            }
+
+            entity.Parent = this;
             Children.Add(entity);
         }
 
