@@ -5,10 +5,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GLFW.NET" Version="0.9.7.1" />
+    <PackageReference Include="glfw-net" Version="3.3.1" />
+    <PackageReference Include="OpenGL.Net" Version="0.8.4" />
   </ItemGroup>
 
 </Project>

@@ -38,18 +38,27 @@
             }
 
             await Task.WhenAll(updateTasks);
+
+            foreach (Entity entity in ents)
+            {
+                updateTasks.Add(Task.Run(() => UpdateChildren(entity, true)));
+            }
+
+            await Task.WhenAll(updateTasks);
+
         }
 
-        private static async void UpdateChildren(Entity entity)
+        private static async void UpdateChildren(Entity entity, bool late = false)
         {
-            entity.Update();
+            if (!late) entity.Update();
+            else entity.LateUpdate();
 
             List<Entity> children = entity.GetChildren();
             List<Task> childUpdateTasks = new();
 
             foreach (Entity child in children)
             {
-                childUpdateTasks.Add(Task.Run(() => UpdateChildren(child)));
+                childUpdateTasks.Add(Task.Run(() => UpdateChildren(child, late)));
             }
 
             await Task.WhenAll(childUpdateTasks.ToArray());
