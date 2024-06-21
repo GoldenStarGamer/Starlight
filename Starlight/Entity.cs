@@ -31,7 +31,7 @@
 
         public static async void MegaUpdate(List<Entity> ents)
         {
-            List<Task> updateTasks = new List<Task>();
+            List<Task> updateTasks = new();
             foreach (Entity entity in ents)
             {
                 updateTasks.Add(Task.Run(() => UpdateChildren(entity)));
@@ -45,7 +45,7 @@
             entity.Update();
 
             List<Entity> children = entity.GetChildren();
-            List<Task> childUpdateTasks = new List<Task>();
+            List<Task> childUpdateTasks = new();
 
             foreach (Entity child in children)
             {
