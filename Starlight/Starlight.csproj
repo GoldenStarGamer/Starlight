@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="GLFW.NET" Version="0.9.7.1" />
+  </ItemGroup>
+
 </Project>
