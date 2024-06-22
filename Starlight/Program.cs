@@ -23,8 +23,10 @@ namespace Starlight
 				throw new System.Exception($"GLFW WINDOW CREATION ERROR {Glfw.GetError(out msg)}: {msg}");
 			}
 			Glfw.MakeContextCurrent(window);
-			// Here lies Gl.Viewport(0, 0, 800, 600); He was found to create an anoying exeption, that stupid bitch.
+			Gl.Viewport(0, 0, 800, 600);
 			Glfw.SetFramebufferSizeCallback(window, WinManager.frameSizeChange);
+			KeyRun esctoquit = new(window, Keys.Escape, () => Glfw.SetWindowShouldClose(window, true));
+			ents.Add(esctoquit);
 			while (!Glfw.WindowShouldClose(window))
 			{
 				Entity.MegaUpdate(ents);
