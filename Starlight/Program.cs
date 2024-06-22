@@ -8,6 +8,8 @@ namespace Starlight
 		private static List<Entity> ents = [];
 		static void Main(string[] args)
 		{
+			Window window = new();
+
 			if (!Glfw.Init())
 			{
 				String msg;
@@ -18,7 +20,7 @@ namespace Starlight
 			Glfw.WindowHint(Hint.ContextVersionMinor, 3);
 			Glfw.WindowHint(Hint.OpenglProfile, Profile.Core);
 
-			var window = Glfw.CreateWindow(800, 600, "Starlight", GLFW.Monitor.None, Window.None);
+			window = Glfw.CreateWindow(800, 600, "Starlight", GLFW.Monitor.None, Window.None);
 			if (window == Window.None)
 			{
 				String msg;
@@ -27,7 +29,7 @@ namespace Starlight
 
 			Glfw.MakeContextCurrent(window);
 			Gl.Viewport(0, 0, 800, 600);
-			Glfw.SetFramebufferSizeCallback(window, WinManager.frameSizeChange);
+			Glfw.SetFramebufferSizeCallback(window, (IntPtr window, int width, int height) => Gl.Viewport(0, 0, width, height));
 
 			KeyRun esctoquit = new(window, Keys.Escape, () => Glfw.SetWindowShouldClose(window, true));
 			ents.Add(esctoquit);
@@ -35,6 +37,8 @@ namespace Starlight
 			while (!Glfw.WindowShouldClose(window))
 			{
 				Entity.MegaUpdate(ents);
+				Gl.ClearColor(1, 0, 0, 0.5f);
+				Gl.Clear(ClearBufferMask.ColorBufferBit);
 				Glfw.SwapBuffers(window);
 				Glfw.PollEvents();
 			}
@@ -47,6 +51,7 @@ namespace Starlight
 			{
 				Console.Error.WriteLine($"ERROR: {e.Message}");
 			}
+
 		}
 	}
 }
