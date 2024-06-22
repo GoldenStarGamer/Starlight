@@ -5,12 +5,26 @@
 
 		public Entity? Parent { get; private set; }
 
+		/// <summary>
+		/// Updates every frame, do not run, the engine already does that.
+		/// </summary>
 		public virtual void Update() { }
 
+		/// <summary>
+		/// Like update, but runs after all entities have run update, again, do not run, the engine already does that.
+		/// </summary>
 		public virtual void LateUpdate() { }
 
-		private List<Entity> Children = new();
+		/// <summary>
+		/// List of children, do not change it, use the functions instead.
+		/// </summary>
+		internal readonly List<Entity> Children = [];
 
+		/// <summary>
+		/// Add entity to this object's children
+		/// </summary>
+		/// <param name="entity"></param>
+		/// <exception cref="InvalidOperationException">If the entity already is a child of another entity</exception>
 		public void AddChild(Entity entity)
 		{
 			
@@ -25,9 +39,25 @@
 			Children.Add(entity);
 		}
 
+		/// <summary>
+		/// Remove entity from this object's children
+		/// </summary>
+		/// <param name="entity"></param>
+		public void RemoveChild(Entity entity) 
+		{
+			ArgumentNullException.ThrowIfNull(nameof(entity));
+
+			entity.Parent = null;
+			Children.Remove(entity);
+		}
+
+		/// <summary>
+		/// Get this object's children
+		/// </summary>
+		/// <returns>A copy of the object's children list</returns>
 		public List<Entity> GetChildren() { return new List<Entity>(Children); }
 
-		public static async void MegaUpdate(List<Entity> ents)
+		internal static async void MegaUpdate(List<Entity> ents)
 		{
 			List<Task> updateTasks = new();
 			foreach (Entity entity in ents)
@@ -46,7 +76,7 @@
 
 		}
 
-		private static async void UpdateChildren(Entity entity, bool late = false)
+		internal static async void UpdateChildren(Entity entity, bool late = false)
 		{
 			if (!late) entity.Update();
 			else entity.LateUpdate();
