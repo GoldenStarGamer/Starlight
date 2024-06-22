@@ -23,7 +23,7 @@ namespace Starlight
 				throw new System.Exception($"GLFW WINDOW CREATION ERROR {Glfw.GetError(out msg)}: {msg}");
 			}
 			Glfw.MakeContextCurrent(window);
-			Gl.Viewport(0, 0, 800, 600);
+			// Here lies Gl.Viewport(0, 0, 800, 600); He was found to create an anoying exeption, that stupid bitch.
 			Glfw.SetFramebufferSizeCallback(window, WinManager.frameSizeChange);
 			while (!Glfw.WindowShouldClose(window))
 			{
@@ -31,7 +31,14 @@ namespace Starlight
 				Glfw.SwapBuffers(window);
 				Glfw.PollEvents();
 			}
-			Glfw.Terminate();
+			try
+			{
+				Glfw.Terminate();
+			}
+			catch (GLFW.Exception e)
+			{
+				Console.Error.WriteLine($"ERROR: {e.Message}");
+			}
 		}
 	}
 }
