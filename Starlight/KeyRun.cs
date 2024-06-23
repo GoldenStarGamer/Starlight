@@ -1,5 +1,4 @@
-﻿using GLFW;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,7 +10,7 @@ namespace Starlight
 	/// <summary>
 	/// Class that runs functions when a key is pressed, only works if it's accessible from the entity megatable
 	/// </summary>
-	public class KeyRun : Entity
+	/*public class KeyRun : Entity
 	{
 		private readonly Keys key;
 		private readonly Window window;
@@ -39,5 +38,5 @@ namespace Starlight
 				onPressed();
 			}
 		}
-	}
+	}*/
 }
