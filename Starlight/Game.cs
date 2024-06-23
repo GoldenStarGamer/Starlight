@@ -17,6 +17,7 @@ namespace Starlight
         };
 
         int VertexBufferObject;
+        int VertexArrayObject;
 
         Shader? shader;
 
@@ -28,26 +29,33 @@ namespace Starlight
         protected override void OnLoad()
         {
             base.OnLoad();
+
             KeyRun esctoquit = new(this, Keys.Escape, () => Close());
             ents.Add(esctoquit);
+
             GL.ClearColor(0.2f, 0.3f, 0.3f,1.0f);
+
             VertexBufferObject = GL.GenBuffer();
+            VertexArrayObject = GL.GenVertexArray();
+
+            GL.BindVertexArray(VertexArrayObject);
             GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
-
-            int VertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(VertexArrayObject);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
 
             shader = new("shaders\\vertex.vert", "shaders\\fragment.frag");
-            //shader.Use();
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             base.OnRenderFrame(args);
             GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            if(shader != null)
+            shader.Use();
+            GL.BindVertexArray(VertexArrayObject);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
 
             SwapBuffers();
         }
