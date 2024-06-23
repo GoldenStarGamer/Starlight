@@ -32,6 +32,13 @@ namespace Starlight
             ents.Add(esctoquit);
             GL.ClearColor(0.2f, 0.3f, 0.3f,1.0f);
             VertexBufferObject = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+
+            int VertexArrayObject = GL.GenVertexArray();
+            GL.BindVertexArray(VertexArrayObject);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+            GL.EnableVertexAttribArray(0);
 
             shader = new("shaders\\vertex.vert", "shaders\\fragment.frag");
             //shader.Use();
@@ -56,16 +63,6 @@ namespace Starlight
         { 
             base.OnUpdateFrame(args);
             Entity.MegaUpdate(ents);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
-
-            int VertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(VertexArrayObject);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-
-            if(shader != null)
-            shader.Use();
         }
 
         protected override void OnUnload()
