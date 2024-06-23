@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,10 +12,10 @@ namespace Starlight
 	/// <summary>
 	/// Class that runs functions when a key is pressed, only works if it's accessible from the entity megatable
 	/// </summary>
-	/*public class KeyRun : Entity
+	public class KeyRun : Entity
 	{
 		private readonly Keys key;
-		private readonly Window window;
+		private readonly GameWindow window;
 		public delegate void ActionDelegate();
 		private readonly ActionDelegate onPressed;
 
@@ -23,7 +25,7 @@ namespace Starlight
 		/// <param name="setwindow">Window to check for the keypress</param>
 		/// <param name="setkey">Key that it listens to</param>
 		/// <param name="onPressed">Function to run when the key is pressed</param>
-		public KeyRun(Window setwindow, Keys setkey, ActionDelegate onPressed)
+		public KeyRun(GameWindow setwindow, Keys setkey, ActionDelegate onPressed)
 		{
 			this.window = setwindow;
 			this.key = setkey;
@@ -33,10 +35,10 @@ namespace Starlight
 
 		public override void Update()
 		{
-			if (Glfw.GetKey(window, key) == InputState.Press)
+			if (window.KeyboardState.IsKeyDown(key))
 			{
 				onPressed();
 			}
 		}
-	}*/
+	}
 }

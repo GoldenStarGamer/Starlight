@@ -1,13 +1,11 @@
-﻿using OpenTK;
-
-namespace Starlight
+﻿namespace Starlight
 { 
 	class Program
 	{
-		private static List<Entity> ents = [];
 		static void Main(string[] args)
 		{
-
+			Game game = new(600, 800, "Starlight");
+			game.Run();
 		}
 	}
 }
