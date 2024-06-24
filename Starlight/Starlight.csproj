@@ -12,4 +12,8 @@
     <PackageReference Include="OpenTK" Version="4.8.2" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(ProjectDir)shaders\*&quot; &quot;$(ProjectDir)$(OutDir)shaders\&quot; /E /I /Y" />
+  </Target>
+
 </Project>

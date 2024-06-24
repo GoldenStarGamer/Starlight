@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 public class Shader : IDisposable
 {
-    int Handle;
+    public int Handle;
 
-    public Shader(string vertexPath, string fragmentPath)
+    public void Create(string vertexPath, string fragmentPath)
     {
         int VertexShader, FragmentShader;
 
