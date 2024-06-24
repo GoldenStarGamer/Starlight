@@ -14,7 +14,7 @@ public class Shader : IDisposable
         int VertexShader, FragmentShader;
 
         string VertexShaderSource = File.ReadAllText(vertexPath);
-        string FragmentShaderSource = File.ReadAllText(fragmentPath);   
+        string FragmentShaderSource = File.ReadAllText(fragmentPath); 
 
         VertexShader = GL.CreateShader(ShaderType.VertexShader);
         GL.ShaderSource(VertexShader, VertexShaderSource);

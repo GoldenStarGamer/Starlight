@@ -10,16 +10,16 @@ namespace Starlight
     {
         private static List<Entity> ents = [];
 
-        float[] vertices = {
-            0.5f,  0.5f, 0.0f,  // top right
-            0.5f, -0.5f, 0.0f,  // bottom right
-            -0.5f, -0.5f, 0.0f,  // bottom left
-            -0.5f,  0.5f, 0.0f   // top left
+        private readonly float[] vertices =
+        {
+             // positions        // colors
+             0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+            -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
+             0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
         };
 
         uint[] indices = {  // note that we start from 0!
-            0, 1, 3,   // first triangle
-            1, 2, 3    // second triangle
+            0, 1, 2,   // first triangle
         };
 
         int VertexBufferObject;
@@ -27,8 +27,6 @@ namespace Starlight
         int ElementBufferObject;
 
         public Shader shader = new();
-
-        Stopwatch timer = new();
 
         public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
         {
@@ -50,17 +48,19 @@ namespace Starlight
             
             VertexArrayObject = GL.GenVertexArray();
             GL.BindVertexArray(VertexArrayObject);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
-            
+
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+            GL.EnableVertexAttribArray(1);
+
             ElementBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
 
             shader.Create("shaders\\vertex.vert", "shaders\\fragment.frag");
-
-            timer.Start();
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -70,15 +70,6 @@ namespace Starlight
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             shader.Use();
-
-            double timeValue = timer.Elapsed.TotalSeconds;
-            float greenValue = (float)Math.Sin(timeValue) / 2.0f + 0.5f;
-            int vertexColorLocation = GL.GetUniformLocation(shader.Handle, "vertexColor");
-
-            if (vertexColorLocation == -1)
-                throw new Exception("vertexColor NOT FOUND");
-
-            GL.Uniform4(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
             GL.BindVertexArray(VertexArrayObject);
             GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
