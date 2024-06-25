@@ -10,12 +10,13 @@ namespace Starlight
     {
         private static List<Entity> ents = [];
 
-        private readonly float[] vertices = {
-             // positions        // colors
-             0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-            -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-             0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,   // top right
-            -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.5f,   // top left
+        float[] vertices =
+{
+        // Position           // Texture coordinates
+        -0.5f,  0.5f, 0.0f,   0.0f, 1.0f,  // top left
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
+         0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
         };
 
         uint[] indices = {  // note that we start from 0!
@@ -29,6 +30,8 @@ namespace Starlight
 
         public Shader shader = new();
 
+        Texture texture = new();
+
         public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
         {
             ClientSize = (width, height), Title = title
@@ -40,6 +43,8 @@ namespace Starlight
 
             KeyRun esctoquit = new(this, Keys.Escape, () => Close());
             ents.Add(esctoquit);
+            
+            shader.Create("resources\\shaders\\vertex.vert", "resources\\shaders\\fragment.frag");
 
             GL.ClearColor(0.2f, 0.3f, 0.3f,1.0f);
 
@@ -50,18 +55,20 @@ namespace Starlight
             VertexArrayObject = GL.GenVertexArray();
             GL.BindVertexArray(VertexArrayObject);
 
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
 
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
+            int texCoordLocation = shader.GetAttribLocation("aTexCoord");
+            GL.EnableVertexAttribArray(texCoordLocation);
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
 
             ElementBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
+            texture.Make("resources\\dummy.jpg");
+            texture.Use();
 
-            shader.Create("shaders\\vertex.vert", "shaders\\fragment.frag");
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
