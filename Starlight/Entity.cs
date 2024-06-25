@@ -1,59 +1,96 @@
 ﻿namespace Starlight
 {
-    public abstract class Entity
-    {
+	public abstract class Entity
+	{
 
-        public Entity? Parent { get; private set; }
+		public Entity? Parent { get; private set; }
 
-        public virtual void Update() { }
+		/// <summary>
+		/// Updates every frame, do not run, the engine already does that.
+		/// </summary>
+		public virtual void Update() { }
 
-        public virtual void LateUpdate() { }
+		/// <summary>
+		/// Like update, but runs after all entities have run update, again, do not run, the engine already does that.
+		/// </summary>
+		public virtual void LateUpdate() { }
 
-        private List<Entity> Children = new();
+		/// <summary>
+		/// List of children, do not change it, use the functions instead.
+		/// </summary>
+		internal readonly List<Entity> Children = [];
 
-        public void AddChild(Entity entity)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
+		/// <summary>
+		/// Add entity to this object's children
+		/// </summary>
+		/// <param name="entity"></param>
+		/// <exception cref="InvalidOperationException">If the entity already is a child of another entity</exception>
+		public void AddChild(Entity entity)
+		{
+			
+			ArgumentNullException.ThrowIfNull(nameof(entity));
 
-            if (entity.Parent != null)
-            {
-                throw new InvalidOperationException("The entity already has a parent.");
-            }
+			if (entity.Parent != null)
+			{
+				throw new InvalidOperationException("The entity already has a parent.");
+			}
 
-            entity.Parent = this;
-            Children.Add(entity);
-        }
+			entity.Parent = this;
+			Children.Add(entity);
+		}
 
-        public List<Entity> GetChildren() { return new List<Entity>(Children); }
+		/// <summary>
+		/// Remove entity from this object's children
+		/// </summary>
+		/// <param name="entity"></param>
+		public void RemoveChild(Entity entity) 
+		{
+			ArgumentNullException.ThrowIfNull(nameof(entity));
 
-        public static async void MegaUpdate(List<Entity> ents)
-        {
-            List<Task> updateTasks = new List<Task>();
-            foreach (Entity entity in ents)
-            {
-                updateTasks.Add(Task.Run(() => UpdateChildren(entity)));
-            }
+			entity.Parent = null;
+			Children.Remove(entity);
+		}
 
-            await Task.WhenAll(updateTasks);
-        }
+		/// <summary>
+		/// Get this object's children
+		/// </summary>
+		/// <returns>A copy of the object's children list</returns>
+		public List<Entity> GetChildren() { return new List<Entity>(Children); }
 
-        private static async void UpdateChildren(Entity entity)
-        {
-            entity.Update();
+		internal static async void MegaUpdate(List<Entity> ents)
+		{
+			List<Task> updateTasks = new();
+			foreach (Entity entity in ents)
+			{
+				updateTasks.Add(Task.Run(() => UpdateChildren(entity)));
+			}
 
-            List<Entity> children = entity.GetChildren();
-            List<Task> childUpdateTasks = new List<Task>();
+			await Task.WhenAll(updateTasks);
 
-            foreach (Entity child in children)
-            {
-                childUpdateTasks.Add(Task.Run(() => UpdateChildren(child)));
-            }
+			foreach (Entity entity in ents)
+			{
+				updateTasks.Add(Task.Run(() => UpdateChildren(entity, true)));
+			}
 
-            await Task.WhenAll(childUpdateTasks.ToArray());
-        }
+			await Task.WhenAll(updateTasks);
 
-    }
+		}
+
+		internal static async void UpdateChildren(Entity entity, bool late = false)
+		{
+			if (!late) entity.Update();
+			else entity.LateUpdate();
+
+			List<Entity> children = entity.GetChildren();
+			List<Task> childUpdateTasks = new();
+
+			foreach (Entity child in children)
+			{
+				childUpdateTasks.Add(Task.Run(() => UpdateChildren(child, late)));
+			}
+
+			await Task.WhenAll(childUpdateTasks.ToArray());
+		}
+
+	}
 }
